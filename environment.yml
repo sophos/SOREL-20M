@@ -1,0 +1,22 @@
+name: sorel
+channels:
+  - defaults
+  - pytorch
+dependencies:
+  - pip
+  - python=3.6
+  - pytorch::pytorch
+  - pytorch::torchvision
+  - cudatoolkit=10.1
+  - tqdm
+  - scikit-learn
+  - lightgbm
+  - matplotlib
+  - pandas
+  - pip:
+    - baker==1.3
+    - lmdb==0.98
+    - logzero==1.5.0
+    - msgpack==0.6.2
+prefix: /home/ubuntu/anaconda3/envs/sorel
+
