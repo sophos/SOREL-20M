@@ -3,7 +3,6 @@ Sophos-ReversingLabs 20 Million dataset
 
 This code depends on the SOREL dataset available via Amazon S3 at `s3://sorel-20m/09-DEC-2020/processed-data/`
 
-
 This code produced the baseline models available at `s3://sorel-20m/09-DEC-2020/baselines`
 
 If you use this code and data in your own research, please cite our paper: [Link forthcoming]
@@ -83,6 +82,8 @@ Use `--help` for either script to see details and options.  The model itself is 
 Due to the size of the dataset, training a boosted model is difficult.  We use lightGBM, which has relatively memory-efficient data handlers, allowing it to fit a model in-memory using approximately 175GB of RAM.  The lightGBM model provided in this repository was trained on an Amazon m5.24xlarge instance.  
 
 The script `build_numpy_arrays_for_lightgbm.py` will take training/validation/testing datasets and split them into three .npz files in the specified data location that can then be used for training a LightGBM model.  Please note that these files will be extremely large (113GB, 23GB, and 38GB, respectively) using the provided Ember features.
+
+Alternatively, you may use the pre-extracted npz files available at `s3://sorel-20m/09-DEC-2020/lightGBM-features/` which contain Ember features using the default time splits for training, validation, and testing.
 
 The lightGBM model can be trained in much the same manner as the neural network
 
