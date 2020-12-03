@@ -43,7 +43,7 @@ def dump_data_to_numpy(mode, output_file, workers=1, batchsize=1000, remove_miss
         sys.stdout.write(f"\r{i} / {len(_generator)}")
         sys.stdout.flush()
     np.savez(output_file, feature_array, label_array)
-    print(f"\nWrote output to {outputfile}")
+    print(f"\nWrote output to {output_file}")
 
 
 if __name__ == '__main__':
