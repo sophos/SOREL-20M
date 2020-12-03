@@ -1,13 +1,16 @@
 # SoReL-20M
 Sophos-ReversingLabs 20 Million dataset
 
-Note -- this code depends on the SOREL dataset available via Amazon S3 at [LOCATION TBD]
+This code depends on the SOREL dataset available via Amazon S3 at `s3://sorel-20m/09-DEC-2020/processed-data/`
+
+This code produced the baseline models available at `s3://sorel-20m/09-DEC-2020/baselines`
 
 # Requirements
 
-See `environment.yml`
+Python 3.6+.  See `environment.yml` for additional package requirements.
 
-The file `shas_missing_ember_features.json` contains a list of sha256 values that indicate samples for which no Ember v2 feature values could be extracted; the location of this file can be passed to `--remove_missing_features` parameter in `train.train_network`, `evaluate.evaluate_network`, and `evaluate.evaluate_lgb` to significantly speed up the data loading time.
+
+# Quickstart
 
 The main scripts of interest are:
 1. `train.py` for training deep learning or (on a machine with sufficient RAM) LightGBM models
@@ -16,16 +19,17 @@ The main scripts of interest are:
 
 All scripts have multiple commands, documented via --help
 
-# Quickstart
-
 Once you have cloned the repository, enter the repository directory and create a conda environment:
+
 ```
 cd SoReL-20M
 conda env create -f environment.yml
 conda activate sorel
 ```
 
-Ensure that you have the SOREL data in a local directory.  Edit `config.py` to indicate the device to use (CPU or CUDA) as well as the dataset location and desired checkpoint directory.
+Ensure that you have the SOREL data in a local directory.  Edit `config.py` to indicate the device to use (CPU or CUDA) as well as the dataset location and desired checkpoint directory.  The dataset location should point to the folder that contains the `meta.db` file.
+
+The file `shas_missing_ember_features.json` contains a list of sha256 values that indicate samples for which no Ember v2 feature values could be extracted; the location of this file can be passed to `--remove_missing_features` parameter in `train.train_network`, `evaluate.evaluate_network`, and `evaluate.evaluate_lgb` to significantly speed up the data loading time. If is it not provided, you should specify `--remove_missing_features=True`; if the dataloader reaches a missing feature it will cause an error.
 
 You can train a neural network model with the following (note that config.py values can be overridden via command line switches:
 ```
@@ -42,9 +46,9 @@ To enable plotting of multiple series, the `plot.plot_roc_distributions_for_tag`
 
 ```
 # Re-plot baselines -- note that the below command assumes 
-# that the S3 dataset has been downloaded to the location
-# /dataset
-python plot.py plot_roc_distribution_for_tag /dataset/baselines/results/ffnn_results.json ./ffnn_results.png
+# that the baseline models at s3://sorel-20m/09-DEC-2020/baselines
+# have been downloaded to the /baselines directory
+python plot.py plot_roc_distribution_for_tag /baselines/results/ffnn_results.json ./ffnn_results.png
 ```
 
 # Neural network training
