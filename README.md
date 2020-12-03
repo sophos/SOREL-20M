@@ -3,7 +3,10 @@ Sophos-ReversingLabs 20 Million dataset
 
 This code depends on the SOREL dataset available via Amazon S3 at `s3://sorel-20m/09-DEC-2020/processed-data/`
 
+
 This code produced the baseline models available at `s3://sorel-20m/09-DEC-2020/baselines`
+
+If you use this code and data in your own research, please cite our paper: [Link forthcoming]
 
 # Requirements
 
@@ -27,9 +30,18 @@ conda env create -f environment.yml
 conda activate sorel
 ```
 
-Ensure that you have the SOREL data in a local directory.  Edit `config.py` to indicate the device to use (CPU or CUDA) as well as the dataset location and desired checkpoint directory.  The dataset location should point to the folder that contains the `meta.db` file.
+Ensure that you have the SOREL processed data in a local directory.  Edit `config.py` to indicate the device to use (CPU or CUDA) as well as the dataset location and desired checkpoint directory.  The dataset location should point to the folder that contains the `meta.db` file.
 
-The file `shas_missing_ember_features.json` contains a list of sha256 values that indicate samples for which no Ember v2 feature values could be extracted; the location of this file can be passed to `--remove_missing_features` parameter in `train.train_network`, `evaluate.evaluate_network`, and `evaluate.evaluate_lgb` to significantly speed up the data loading time. If is it not provided, you should specify `--remove_missing_features=True`; if the dataloader reaches a missing feature it will cause an error.
+
+*Please note*: the complete contents of processed-data require approximately 552 GB of disk space, the bulk of which is the PE metadata and not used in training the baseline models.  If you only wish to retrain the baseline models, then you will need only the following files (approximately 78GB in total): 
+
+```
+/meta.db
+/ember_features/data.mdb
+/ember_features/lock.mdb
+```
+
+The file `shas_missing_ember_features.json` within this repository contains a list of sha256 values that indicate samples for which no Ember v2 feature values could be extracted; it is _highly recommended_ that the location of this file be passed to `--remove_missing_features` parameter in `train.train_network`, `evaluate.evaluate_network`, and `evaluate.evaluate_lgb` to significantly speed up the data loading time. If is it not provided, you should specify `--remove_missing_features='scan'` which will scan all keys to check for and remove ones with missing features prior to building the dataloader; if the dataloader reaches a missing feature it will cause an error.
 
 You can train a neural network model with the following (note that config.py values can be overridden via command line switches:
 ```
@@ -53,7 +65,7 @@ python plot.py plot_roc_distribution_for_tag /baselines/results/ffnn_results.jso
 
 # Neural network training
 
-While a GPU allows for faster training (10 epochs can be completed in approximately 90 minutes), this model can be also trained via CPU; the provided results were obtained via GPU on an Amazon g3.4xlarge EC2 instance starting with a "Deep Learning AMI (Ubuntu 16.04) Version 26.0 (ami-025ed45832b817a35)" and updating it as above.  In practice, disk I/O loading features from the feature database seems to be a rate-limiting step, so running on a machine with multiple cores and using a drive with high IOPS is recommended.  Training the network requires approximately 12GB of RAM when trained via CPU, though it varies slightly with the number of cores.  It is also highly recommended to use the `--remove_missing_features=shas_missing_ember_features.json` option as this significantly improves loading time of the data.
+While a GPU allows for faster training (10 epochs can be completed in approximately 90 minutes), this model can be also trained via CPU; the provided results were obtained via GPU on an Amazon g3.4xlarge EC2 instance starting with a "Deep Learning AMI (Ubuntu 16.04) Version 26.0 (ami-025ed45832b817a35)" and updating it as above.  In practice, disk I/O loading features from the feature database seems to be a rate-limiting step assuming a GPU is used, so running on a machine with multiple cores and using a drive with high IOPS is recommended.  Training the network requires approximately 12GB of RAM when trained via CPU, though it varies slightly with the number of cores.  It is also highly recommended to use the `--remove_missing_features=shas_missing_ember_features.json` option as this significantly improves loading time of the data.
 
 Note: if you get an error message `RuntimeError: received 0 items of ancdata` this is typically caused by the limit on the maximum number of open files being too low; this may be increased via the `ulimit` command.  In some cases -- if you use a large number of parallel workers -- it may also be neccessary to increase shared memory.
 
@@ -72,6 +84,11 @@ Due to the size of the dataset, training a boosted model is difficult.  We use l
 
 The script `build_numpy_arrays_for_lightgbm.py` will take training/validation/testing datasets and split them into three .npz files in the specified data location that can then be used for training a LightGBM model.  Please note that these files will be extremely large (113GB, 23GB, and 38GB, respectively) using the provided Ember features.
 
+The lightGBM model can be trained in much the same manner as the neural network
+
+```
+python train.py train_lightGBM --train_npz_file=/dataset/train-features.npz --validation_npz_file=/dataset/validation-features.npz --model_configuration_file=./lightgbm_config.json --checkpoint_dir=/dataset/baselines/checkpoints/lightGBM/run0/
+```
 
 Assuming that you've placed the S3 dataset in /dataset as suggested above, this command will perform a single evaluation run.
 ```
