@@ -1,16 +1,15 @@
 # SoReL-20M
 Sophos-ReversingLabs 20 Million dataset
 
-This code depends on the SOREL dataset available via Amazon S3 at `s3://sorel-20m/09-DEC-2020/processed-data/`
+The code included in this repository produced the baseline models available at `s3://sorel-20m/09-DEC-2020/baselines`
 
-This code produced the baseline models available at `s3://sorel-20m/09-DEC-2020/baselines`
+This code depends on the SOREL dataset available via Amazon S3 at `s3://sorel-20m/09-DEC-2020/processed-data/`; to train the lightGBM models you can use the npz files available at `s3://sorel-20m/09-DC-2020/lightGBM-features/` or use the scripts included here to extract the required files from the processed data.
 
-If you use this code and data in your own research, please cite our paper: [Link forthcoming]
+If you use this code or this data in your own research, please cite our paper: [Link forthcoming]
 
 # Requirements
 
 Python 3.6+.  See `environment.yml` for additional package requirements.
-
 
 # Quickstart
 
