@@ -11,6 +11,46 @@ If you use this code or this data in your own research, please cite our paper: [
 
 Python 3.6+.  See `environment.yml` for additional package requirements.
 
+# A note on dataset size
+
+The full size of this dataset is approximately 8TB.  It is highly recommended that you only obtain the specific elements you need. Files larger than 1GB are noted below.
+
+```
+s3://sorel-20m
+|   Terms and Conditions of Use.pdf -- the terms you agree to by using this data and code
+|
++---baselines
+|   +---checkpoints
+|   |   +---FFNN - per-epoch checkpoints for 5 seeds of the feed-forward neural network
+|   |   +---lightGBM - final trained lightGBM model for 5 seeds
+|   |
+|   +---results
+|       |  ffnn_results.json - index file of results, required for plotting
+|       |  lgbm_results.json - index file of results, required for plotting
+|       |
+|       +---FFNN
+|       |   +---seed0-seed4 - individual seed results, ~1GB each
+|       |
+|       +---lightgbm
+|           +---seed0-seed4 - individual seed results, ~1GB each
+|
++---binaries
+|      approximately 8TB of zlib compressed malware binaries
+|
++---lightGBM-features
+|      test-features.npz - array of test data for lightGBM; 37GB
+|      train-features.npz - array of training data for lightGBM; 113GB
+|      validation-features.npz - array of validation data for lightGBM; 22GB
+|
++---processed-data
+    |   meta.db - contains index, labels, tags, and counts for the data; 3.5GB
+    |
+    +---ember_features - LMDB directory with baseline features, ~72GB
+    +---pe_metadata - LMDB directory with full metadata dumps, ~480GB
+```
+
+Note: values in the LMDB files are serialized via msgpack and compressed via zlib; the code below handles this extraction automatically, however you will need to decompress and deserialize by hand if you use your own code to handle the data.
+
 # Quickstart
 
 The main scripts of interest are:
