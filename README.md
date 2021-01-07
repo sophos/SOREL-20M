@@ -62,6 +62,8 @@ s3://sorel-20m
 
 Note: values in the LMDB files are serialized via msgpack and compressed via zlib; the code below handles this extraction automatically, however you will need to decompress and deserialize by hand if you use your own code to handle the data.
 
+Please see the file `./pe_full_metadata_example/32c37c352802fb20004fa14053ac13134f31aff747dc0a2962da2ea1ea894d74.json` for an example of the metadata contained in the pe_metadata lmdb database.
+
 # Quickstart
 
 The main scripts of interest are:
