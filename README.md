@@ -27,7 +27,7 @@ Python 3.6+.  See `environment.yml` for additional package requirements.
 The full size of this dataset is approximately 8TB.  It is highly recommended that you only obtain the specific elements you need. Files larger than 1GB are noted below.
 
 ```
-s3://sorel-20m
+s3://sorel-20m/09-DEC-2020/
 |   Terms and Conditions of Use.pdf -- the terms you agree to by using this data and code
 |
 +---baselines
