@@ -182,7 +182,7 @@ def plot_tag_result(results_file, output_filename):
     """
     id_to_resultfile_dict = {'run': results_file}
     id_to_dataframe_dict = collect_dataframes(id_to_resultfile_dict)
-    plot_tag_results(id_to_resultfile_dict['run'], output_filename)
+    plot_tag_results(id_to_dataframe_dict['run'], output_filename)
 
 
 @baker.command
