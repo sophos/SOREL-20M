@@ -30,7 +30,7 @@ class LMDBReader(object):
         with self.env.begin() as txn:
             x = txn.get(key.encode('ascii'))
         if x is None:return None
-        x = msgpack.loads(zlib.decompress(x))
+        x = msgpack.loads(zlib.decompress(x),strict_map_key=False)
         if self.postproc_func is not None:
             x = self.postproc_func(x)
         return x
