@@ -1,3 +1,23 @@
+[SoReL-20M](#SoReL-20M)
+
+[Requirements](#Requirements)
+
+[A note on dataset size](#a-note-on-dataset-size)
+
+[Quickstart](#Quickstart)
+
+[Neural network training](#neural-network-training)
+
+[LightGBM training](#lightgbm-training)
+
+[Frequently Asked Questions](#frequently-asked-questions)
+
+[Copyright and License](#copyright-and-license)
+
+
+
+
+
 # SoReL-20M
 Sophos-ReversingLabs 20 Million dataset
 
@@ -149,6 +169,57 @@ python evaluate.py evaluate_lgb /dataset/baselines/checkpoints/lightGBM/seed0/li
 ```
 
 The script used to generate the numpy array files from the database are found in `generate_numpy_arrays_for_lightgbm.dump_data_to_numpy`.  Note that this script requires approximately as much memory as training the model; a m5.24xlarge or equivalent EC2 instance type is recommended.
+
+# Frequently Asked Questions
+
+**Are there any benign samples available?**
+
+Unfortunately, due to the risk of intellectual property violations, we are not able to make the benign samples freely available. The samples are available via ReversingLabs, and anectodally a large number of them also appear to be available via VirusTotal. We are not able to provide any further assistance in this respect.
+
+**I computed the SHA256 for a malware sample and it's different from the SHA256 value suggested by the file name; why?**
+
+All malware samples have been disarmed as described below; the SHA256 value in the file name is for the original, unmodified file.
+
+**How were the files disarmed?**
+
+The OptionalHeader.Subsystem flag and the FileHeader.Machine header value were both set to 0 to prevent accidental execution of the files.  
+
+**Can you provide a tool to re-arm the files, or the original non-disarmed file?**
+
+Unfortunately, we cannot assist anyone in re-arming the file or in obtaining the original, non-disarmed sample.  As with the benign files, they are available via ReversingLabs, and also a large number of them appear to be available via VirusTotal. 
+
+**How are the malware/benign labels determined?**
+
+We use a combination of non-public, internal information as well as a number of static rules and analyses to obtain the ground truth labels.
+
+**Isn't releasing this data dangerous?**
+
+As we describe in our [blog post](https://ai.sophos.com/2020/12/14/sophos-reversinglabs-sorel-20-million-sample-malware-dataset/):
+
+> The malware we’re releasing is “disarmed” so that it will not execute.  This means it would take knowledge, skill, and time to reconstitute the samples and get them to actually run.  That said, we recognize that there is at least some possibility that a skilled attacker could learn techniques from these samples or use samples from the dataset to assemble attack tools to use as part of their malicious activities.  However, in reality, there are already many other sources attackers could leverage to gain access to malware information and samples that are easier, faster and more cost effective to use. In other words, this disarmed sample set will have much more value to researchers looking to improve and develop their independent defenses than it will have to attackers. 
+
+**Is the feature extraction code available for me to apply to my own samples?**
+
+The feature extraction function is available from the [EMBER repository](https://github.com/elastic/ember/) -- specifically we used the `PEFeatureExtractor.feature_vector()` method in [features.py](https://github.com/elastic/ember/blob/master/ember/features.py).
+
+We parallelized this code and constructed the dataset using Sophos AI internal tools, and are unable to provide this code; please see below for some notes on feature extraction and extending the dataset.
+
+**How can I add additional files/features to the dataset?**
+
+We are not accepting additional data for the main dataset. To add new features, files, or both to your own personal copy of it, we have the following recommendations:
+
+1. The `meta.db` sqlite file serves as the index for the LMDB database, and contains metadata and labels.  At a minimum, for each file, the sqlite database should contain columns for: the file sha256, the malware label, and a first-seen timestamp.
+2. To serialize a feature vector to a LMDB database, each individual sample's feature vector needs to be encoded into a dictionary with a key of zero and a value that is a 1-d list of floats, then serialized via msgpack and compressed via zlib, then inserted into an LMDB database with a key as the hash of the original file.  If you are extracting new features for the existing files, it's important to note that the filenames of the samples are the sha256 values of the original, non-disarmed files, and so you should just re-use that filename rather than compute the hash of the file yourself. 
+3. We obtained best performance for feature extraction using RAM disks wherever possible -- for the files that features are being extracted from at a minimum, and if memory permits, for the LMDB databases as well.
+
+**What are the .npz file and how do they differ from the LMDB data?**
+
+The .npz files in the lightGBM-features directory contain features that are identical to the features in the LMDB database (with training, validation, and test splits given as per the timestamps in `config.py`) but converted to flat numpy arrays for convenience in training the lightGBM models. They contain only binary labels, no tag information.
+
+**The values for the "tag" columns are counts, not binary values; why?**
+
+As described in our [paper](https://arxiv.org/abs/1905.06262) on the tag generation, we parse vendor threat feed information for tokens indicative of the behavioral category of the mwlware; the value in these columns denote the number of tokens we identified for that tag for that sample. It may be taken as correlated with the degree of certainty in the tag, but not calibrated to a standard scale. For most applications we suggest binarizing this value by zero/non-zero.
+
 
 # Copyright and License
 
