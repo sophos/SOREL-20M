@@ -1,6 +1,10 @@
 [SoReL-20M](#SoReL-20M)
 
+[Terms of use](#terms-of-use)
+
 [Requirements](#Requirements)
+
+[Downloading the data](#downloading-the-data)
 
 [A note on dataset size](#a-note-on-dataset-size)
 
@@ -38,9 +42,21 @@ If you use this code or this data in your own research, please cite our paper: "
 }
 ```
 
+# Terms of use
+
+Please read the [Terms of Use](https://github.com/sophos-ai/SOREL-20M/blob/master/Terms%20and%20Conditions%20of%20Use.pdf) before using this code or accessing the data.
+
 # Requirements
 
 Python 3.6+.  See `environment.yml` for additional package requirements.
+
+# Downloading the data
+
+Individual files are available directly via https; e.g. you can download one of the baseline checkpoints via web at the url `http://sorel-20m.s3.amazonaws.com/09-DEC-2020/baselines/checkpoints/FFNN/seed0/epoch_1.pt`
+
+For a large number of files, we recommend using the [AWS command line interface](https://aws.amazon.com/cli/).  The SOREL-20M S3 bucket is public, so no credentials are required.  For example, to download all feedforward neural network checkpoints for all seeds, use the command `aws s3 cp s3://sorel-20m/09-DEC-2020/baselines/checkpoints/FFNN/ . --recursive`
+
+It is possible to download the entire dataset this way, however we strongly recomend reading about the [dataset size](#a-note-on-dataset-size) before doing so and ensuring that you will not incur bandwidth fees or exhaust your available disk space in so doing.
 
 # A note on dataset size
 
